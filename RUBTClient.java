@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.FileNotFoundException;
 import GivenTools.*;
 
+
 public class RUBTClient {
 
   /*
@@ -34,6 +35,7 @@ public class RUBTClient {
     }
   }
 
+
   public static void main(String[] args){
 
     if(args.length != 1) { // Check input args is correct usage
@@ -47,6 +49,9 @@ public class RUBTClient {
 
     try {
       TorrentInfo tInfo = new TorrentInfo(torrentFileBytes);
+      System.out.printf("Trying to torrent %s\n", tInfo.file_name);
+
+      TrackerConnection conn = new TrackerConnection(tInfo);
 
     } catch(BencodingException be) {
       System.err.println(be);

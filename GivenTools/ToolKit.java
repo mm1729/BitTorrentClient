@@ -1,5 +1,5 @@
 /*
- *  RUBTClient is a BitTorrent client written at Rutgers University for 
+ *  RUBTClient is a BitTorrent client written at Rutgers University for
  *  instructional use.
  *  Copyright (C) 2008  Robert Moore II
  *
@@ -26,9 +26,9 @@ import java.nio.*;
  * using Bencoding methods.&nbsp; This class is specifically designed to be used
  * with <code>edu.rutgers.cs.cs352.bt.util.Bencoder</code> and
  * <code>Bencoder2</code>.
- * 
+ *
  * @author Robert Moore II
- * 
+ *
  */
 public class ToolKit
 {
