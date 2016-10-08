@@ -13,13 +13,15 @@ import java.net.ProtocolException;
 
 public class TrackerConnection {
   private TorrentInfo tInfo;
+  private String peer_id = "DONDESTALABIBLIOTECA";
+  private int portNum = 80;
 
   public TrackerConnection(TorrentInfo tInfo) {
     this.tInfo = tInfo;
   }
 
   public void getPeerList() {
-
+    this.sendGETRequest();
   }
 
   private void sendGETRequest() {
@@ -29,7 +31,7 @@ public class TrackerConnection {
       con.setRequestMethod("GET");
       int responseCode = con.getResponseCode();
       System.out.println("\nSending 'GET' request to URL : " + trackerURL.toString());
-      System.out.println("Response Code : " + responseCode);
+      System.out.println("\nResponse Code : " + responseCode);
 
       BufferedReader in = new BufferedReader(
           new InputStreamReader(con.getInputStream()));
@@ -56,7 +58,7 @@ public class TrackerConnection {
     @param buffer ByteBuffer
     @return hexStr is null if buffer is null else is unicode hex string
   */
-  private static String byteBuffertoHexStr(ByteBuffer buffer) {
+  private String byteBuffertoHexStr(ByteBuffer buffer) {
     byte[] bytes; // Get the bytes array from the buffer
     if(buffer.hasArray()) {
         bytes = buffer.array();
@@ -80,7 +82,7 @@ public class TrackerConnection {
     @param tInfo TorrentInfo containing metainfo needed to create the tracker url
     @return trackerURLStr url to be used for the GET request
   */
-  private static URL getTrackerURL(TorrentInfo tInfo) {
+  private URL getTrackerURL(TorrentInfo tInfo) {
     if(tInfo == null) return null;
 
     String trackerURLStr = null;
@@ -89,13 +91,15 @@ public class TrackerConnection {
       // build the URL string
       trackerURLStr = tInfo.announce_url.toString() + "?info_hash=" +
         URLEncoder.encode(byteBuffertoHexStr(tInfo.info_hash), "UTF-8") +
-        "&peer_id=DONDESTALABIBLIOTECA" +
-        "&port=80" + "&left=" + tInfo.file_length;
+        "&peer_id=" + URLEncoder.encode(peer_id, "UTF-8") +
+        "&port=" + URLEncoder.encode(""+portNum, "UTF-8") +
+        "&uploaded=0&downloaded=0&left=" +
+        URLEncoder.encode(""+tInfo.file_length, "UTF-8");
 
       // build the url object
       trackerURL = new URL(trackerURLStr);
     } catch (UnsupportedEncodingException uee) {
-      System.err.println("Need support for UTF-8" + uee.toString());
+      System.err.println("Need support for UTF-8\n" + uee.toString());
     } catch (MalformedURLException mue) {
       System.err.println("Contacting tracker failed!\n" + mue.toString());
     }

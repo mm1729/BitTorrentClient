@@ -52,6 +52,7 @@ public class RUBTClient {
       System.out.printf("Trying to torrent %s\n", tInfo.file_name);
 
       TrackerConnection conn = new TrackerConnection(tInfo);
+      conn.getPeerList();
 
     } catch(BencodingException be) {
       System.err.println(be);
