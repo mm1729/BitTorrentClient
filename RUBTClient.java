@@ -52,8 +52,15 @@ public class RUBTClient {
       System.out.printf("Trying to torrent %s\n", tInfo.file_name);
 
       TrackerConnection conn = new TrackerConnection(tInfo);
-      conn.getPeerList();
-
+      Peer[] peerList = conn.getPeerList();
+      for(Peer p : peerList)
+         System.out.print(p);
+      
+      int disconnectVal = conn.disconnect();
+      System.out.println("Disconnected with Response Code " + disconnectVal);
+      if(disconnectVal == -1) {
+        //failed to disconnect
+      }
     } catch(BencodingException be) {
       System.err.println(be);
       return;
