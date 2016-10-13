@@ -55,7 +55,10 @@ public class RUBTClient {
       Peer[] peerList = conn.getPeerList();
       for(Peer p : peerList)
          System.out.print(p);
-      
+     
+      PeerDownload p = new PeerDownload(tInfo,"DONDESTALABIBLIOTECA",peerList);
+      p.download();
+
       int disconnectVal = conn.disconnect();
       System.out.println("Disconnected with Response Code " + disconnectVal);
       if(disconnectVal == -1) {
