@@ -3,6 +3,7 @@ import java.net.Socket;
 import GivenTools.*;
 import java.net.UnknownHostException;
 import java.util.Arrays;
+import java.lang.*;
 
 public class PeerDownload{
 	private String clientId;
@@ -55,7 +56,7 @@ public class PeerDownload{
 		    	if(pstr.equals(protoName) == false){
 				//throw error
 			}
-			System.out.println(pstr);
+		//	System.out.println(pstr);
 			in.skipBytes(8);
 			byte[] byte_hash = new byte[20];
 			
@@ -68,8 +69,29 @@ public class PeerDownload{
 			String peer_id = new String(byte_peer);
 			if(!peer_id.equals(peerEntry.getId())){
 				System.out.println("EERSDASDSDA!!!!");
-			}	
-			System.out.println(peer_id);		
+			}
+			//ByteArrayOutputStream msg = new ByteArrayOutputStream();
+			msg.write(1);
+			msg.write(0);
+			msg.writeTo(out);
+			
+
+
+		//	System.out.println(peer_id);
+			//out.write(0);
+			for(int i = 0;i<10; i++){
+				out.write(0);
+				System.out.println(in.readByte());
+				System.out.println(i);
+				try{
+				Thread.sleep(10000);
+				}
+				catch(InterruptedException e){
+				}
+			}
+
+			
+
 		    }
 
 		    catch(UnknownHostException e){
