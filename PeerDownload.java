@@ -16,9 +16,9 @@ public class PeerDownload{
 		this.peerList = peers;
 		this.clientId =  clientId;
 		this.tInfo = tInfo;
-	}	
+	}
 
-	
+
 	public void download(){
 		for( Peer peerEntry: peerList){
 
@@ -35,23 +35,24 @@ public class PeerDownload{
 			}
 			msg.write(clientId.getBytes());
 			msg.write(tInfo.info_hash.array());
-			
+
 			out.write(msg.toByteArray());
+			out.flush();
 								/*
 			in.readFully(buf);
 			for(byte b: buf){
 				char c = (char)b;
 				System.out.print(c);
 			}*/
-		
+
 			int pstrlen = (int)in.readByte();
 			if(pstrlen != protoNameLen){
 				//throw error
 			}
 			byte[] byte_pstr = new byte[pstrlen];
-			
+
 			in.readFully(byte_pstr,0,pstrlen);
-				
+
 			String pstr = new String(byte_pstr);
 		    	if(pstr.equals(protoName) == false){
 				//throw error
@@ -59,7 +60,7 @@ public class PeerDownload{
 		//	System.out.println(pstr);
 			in.skipBytes(8);
 			byte[] byte_hash = new byte[20];
-			
+
 			in.readFully(byte_hash,0,20);
 		  	if(!Arrays.equals(byte_hash,tInfo.info_hash.array())){
 				System.out.println("ERRRORRORO!");
@@ -71,26 +72,24 @@ public class PeerDownload{
 				System.out.println("EERSDASDSDA!!!!");
 			}
 			//ByteArrayOutputStream msg = new ByteArrayOutputStream();
-			msg.write(1);
-			msg.write(0);
-			msg.writeTo(out);
-			
 
 
-		//	System.out.println(peer_id);
+			System.out.println(peer_id);
 			//out.write(0);
 			for(int i = 0;i<10; i++){
-				out.write(0);
-				System.out.println(in.readByte());
-				System.out.println(i);
+				out.writeChars("HEELLOOO");
+				out.flush();
+				break;
+				//System.out.println(in.readByte());
+				/*System.out.println(i);
 				try{
 				Thread.sleep(10000);
 				}
 				catch(InterruptedException e){
-				}
+				}*/
 			}
 
-			
+
 
 		    }
 
@@ -102,7 +101,7 @@ public class PeerDownload{
 			    e.printStackTrace();
 		    }
 		}
-		
+
 
 	}
 
