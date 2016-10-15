@@ -54,7 +54,7 @@ public class TrackerConnection {
             peers.add(new Peer(id, ip, port));
           }
 
-          return peers.toArray(new Peer[peers.size()]);        
+          return peers.toArray(new Peer[peers.size()]);
     } catch(BencodingException be) {
         System.err.println("Error decoding Tracker response!\n");
         System.err.println(be.toString());
@@ -64,7 +64,7 @@ public class TrackerConnection {
 
   public int disconnect() {
     URL trackerURL = getTrackerURL(tInfo, "stopped");
-    
+
     try {
         HttpURLConnection con = (HttpURLConnection) trackerURL.openConnection();
         con.setRequestMethod("GET");
@@ -89,23 +89,13 @@ public class TrackerConnection {
       int responseCode = con.getResponseCode();
       System.out.println("\nSending 'GET' request to URL : " + trackerURL.toString());
       System.out.println("\nResponse Code : " + responseCode);
-      //read the input stream into a bytearraystream and into a byte array
+      //read the input streaminto a byte array
       InputStream is = con.getInputStream();
-      ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-
-      int nRead;
-      byte[] data = new byte[512];
-
-      while((nRead = is.read(data, 0, data.length)) != -1) {
-          buffer.write(data, 0, nRead);
-      }
-
-      buffer.flush();
-      data = buffer.toByteArray();
+      byte[] data = Utils.inputStreamToByteArr(is);
       // close the stream and connection
       is.close();
       con.disconnect();
-      return data;  
+      return data;
     } catch(IOException ie) {
       System.err.println("Error occured while opening connection to tracker!");
       System.err.println(ie.toString());
@@ -170,7 +160,7 @@ public class TrackerConnection {
 
     return trackerURL;
   }
-  
+
   private static Charset charset = Charset.forName("UTF-8");
   private static CharsetEncoder encoder = charset.newEncoder();
 

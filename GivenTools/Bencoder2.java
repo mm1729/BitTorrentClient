@@ -1,5 +1,5 @@
 /*
- *  RUBTClient is a BitTorrent client written at Rutgers University for 
+ *  RUBTClient is a BitTorrent client written at Rutgers University for
  *  instructional use.
  *  Copyright (C) 2008-2009  Robert Moore II
  *
@@ -27,43 +27,43 @@ import java.util.TreeMap;
 /**
  * Parses a Bencoded byte array and returns a combination of {@code Map},
  * {@code List}, {@code ByteBuffer}, and {@code Integer} objects.
- * 
+ *
  * @author Robert Moore II
  *
  */
-public final class Bencoder2 
+public final class Bencoder2
 {
 	/**
 	 * Indicates an invalid object type or bencoded object.
 	 */
     private static final int INVALID = -1;
-    
+
     /**
      * Indicates that an object is a dictionary.
      */
     private static final int DICTIONARY = 0;
-    
+
     /**
      * Indicates that an object is an integer.
      */
     private static final int INTEGER = 1;
-    
+
     /**
      * Indicates an object is a byte string.
      */
     private static final int STRING = 2;
-    
+
     /**
      * Indicates an object is a list.
      */
     private static final int LIST = 3;
-    
+
     /*
      ********************************************
      ************ CONVENIENCE METHODS ***********
      ********************************************
      */
-    
+
     /**
      * Extracts the bencoded 'info' dictionary from a metainfo torrent file.
      * @param torrent_file_bytes the bencoded metainfo dictionary.
@@ -77,13 +77,13 @@ public final class Bencoder2
             throw new BencodingException("Exception: No info bytes found!");
         return (ByteBuffer)vals[2];
     }
-    
+
     /*
      ********************************************
      ************ BDECODING METHODS *************
      ********************************************
      */
-    
+
     /**
      * Decodes a bencoded object represented by the byte array.
      * @param bencoded_bytes the bencoded data to decode.
@@ -94,13 +94,13 @@ public final class Bencoder2
     {
         return decode(bencoded_bytes, 0)[1];
     }
-    
+
     /**
      * Decodes a bencoded object represented by the byte array, starting at the specified offset.
      * @param bencoded_bytes the bencoded data to decode.
      * @param offset the offset into {@code bencoded_bytes} at which to start decoding.
      * @return a {@code Map}, {@code List}, {@code ByteBuffer}, or {@code Integer}.
-     * @throws BencodingException if the bencoded object in {@code bencoded_bytes} at offset {@code offset} is incorrectly encoded. 
+     * @throws BencodingException if the bencoded object in {@code bencoded_bytes} at offset {@code offset} is incorrectly encoded.
      */
     private static final Object[] decode(byte[] bencoded_bytes, int offset) throws BencodingException
     {
@@ -118,7 +118,7 @@ public final class Bencoder2
             return null;
         }
     }
-    
+
     /**
      * Decodes an integer from the byte array.
      * @param bencoded_bytes the byte array of the bencoded integer.
@@ -138,7 +138,7 @@ public final class Bencoder2
                 throw new BencodingException("Expected an ASCII integer character, found " + (int)bencoded_bytes[offset]);
             int_chars.append((char)bencoded_bytes[offset]);
         }
-        try 
+        try
         {
             offset++;   // Skip the 'e'
             return new Object[] {new Integer(offset),new Integer(Integer.parseInt(int_chars.toString()))};
@@ -148,7 +148,7 @@ public final class Bencoder2
             throw new BencodingException("Could not parse integer at position" + offset + ".\nInvalid character at position " + offset + ".");
         }
     }
-    
+
     /**
      * Decodes a byte string from the byte array
      * @param bencoded_bytes the bencoded form of the byte string.
@@ -174,7 +174,7 @@ public final class Bencoder2
         System.arraycopy(bencoded_bytes, offset, byte_string, 0, byte_string.length);
         return new Object[] {new Integer(offset+length), ByteBuffer.wrap(byte_string)};
     }
-    
+
     /**
      * Decodes a list from the bencoded byte array.
      * @param bencoded_bytes the bencoded form of the list.
@@ -198,7 +198,7 @@ public final class Bencoder2
         offset++;
         return new Object[] {new Integer(offset), list};
     }
-    
+
     /**
      * Decodes a dictionary from the bencoded byte array.
      * @param bencoded_bytes the bencoded form of the dictionary.
@@ -249,7 +249,7 @@ public final class Bencoder2
 
         return new Object[] {new Integer(++offset), map, info_hash_bytes};
     }
-    
+
     /**
      * Determines the bencoded data type at {@code bencoded_bytes[offset]}.
      * @param bencoded_bytes the bencoded data.
@@ -286,13 +286,13 @@ public final class Bencoder2
             return INVALID;
         }
     }
-    
+
     /*
      ********************************************
      ************ BENCODING METHODS *************
      ********************************************
      */
-    
+
     /**
      * Bencodes the specified object as a {@code byte[]}.
      * @param o the object to bencode.
@@ -314,8 +314,8 @@ public final class Bencoder2
         else
             throw new BencodingException("Error: Object not of valid type for Bencoding.");
     }
-    
-    
+
+
     /**
      * Bencodes the specified byte string.
      * @param string the byte string to bencode.
@@ -339,7 +339,7 @@ public final class Bencoder2
         }
         return bencoded_string;
     }
-    
+
     /**
      * Bencodes the specified Integer.
      * @param integer the Integer to bencode.
@@ -362,10 +362,10 @@ public final class Bencoder2
         }
         return bencoded_integer;
     }
-    
+
     /**
      * Bencodes the specified {@code ArrayList}.
-     * @param list the {@code ArrayList} to bencode. 
+     * @param list the {@code ArrayList} to bencode.
      * @return a {@code byte[]} containing the bencoded form of the {@code ArrayList}.
      * @throws BencodingException if any of the objects in the list is not bencodable.
      */
@@ -391,7 +391,7 @@ public final class Bencoder2
         }
         return bencoded_list;
     }
-    
+
     /**
      * Bencodes the specified {@code HashMap}.
      * @param dictionary the {@code HashMap} to bencode.
@@ -410,7 +410,7 @@ public final class Bencoder2
             dictionary_parts[k++] = encodeString(key);
             dictionary_parts[k++] = encode(sorted_dictionary.get(key));
         }
-        
+
         int total_length = 2;
         for(int i = 0; i < dictionary_parts.length; i++)
         {

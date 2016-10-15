@@ -10,84 +10,103 @@ public class PeerDownload{
 	private TorrentInfo tInfo;
 	private Peer[] peerList;
 	private Socket peerConnection;
-	public String protoName = "BitTorrent protocol";
-	public int protoNameLen = 19;
+	private final String protoName = "BitTorrent protocol";
+	private final int protoNameLen = protoName.length();
+
 	public PeerDownload(TorrentInfo tInfo,String clientId, Peer[] peers){
 		this.peerList = peers;
 		this.clientId =  clientId;
 		this.tInfo = tInfo;
 	}
 
+	/*
+	Constructs the handshake message
+	*/
+	private ByteArrayOutputStream getHandshakeMsg() throws IOException{
+		ByteArrayOutputStream msg = new ByteArrayOutputStream();
+		msg.write(protoNameLen);
+		msg.write(protoName.getBytes());
+		for(int i = 0; i<8; i++){
+			msg.write(0);
+		}
+		msg.write(tInfo.info_hash.array());
+		msg.write(clientId.getBytes());
+
+		return msg;
+	}
+
+	private boolean receiveHandshake(DataInputStream in, Peer peerEntry)
+		throws IOException{
+		byte[] handshake = Utils.inputStreamToByteArr(in);
+		// check the handshake - pstrlen
+		int pstrLen = (int) handshake[0];
+		if(pstrLen != protoNameLen){
+			return false;
+		}
+
+		String pstr = new String(Arrays.copyOfRange(handshake, 1, pstrLen+1));
+		if(pstr.equals(protoName) == false){
+			return false;
+		}
+
+		String bytePeer = new String(Arrays.copyOfRange(handshake,
+			pstrLen+1+8, handshake.length));
+
+		if(peerEntry.getId().equals(peerEntry.getId()) == false){
+			return false;
+		}
+		return true;
+	}
 
 	public void download(){
-		for( Peer peerEntry: peerList){
+		for( Peer peerEntry : peerList){
 
 			try{
 			peerConnection = new Socket(peerEntry.getIp(),peerEntry.getPort());
-			DataOutputStream out = new DataOutputStream(new BufferedOutputStream(peerConnection.getOutputStream()));
+			DataOutputStream out = new DataOutputStream(
+				new BufferedOutputStream(peerConnection.getOutputStream()));
 
-			DataInputStream  in  = new DataInputStream(new BufferedInputStream(peerConnection.getInputStream()));
-			ByteArrayOutputStream msg = new ByteArrayOutputStream();
-			msg.write(protoNameLen);
-			msg.write(protoName.getBytes());
-			for(int i =0; i<8; i++){
-				msg.write(0);
-			}
-			msg.write(clientId.getBytes());
-			msg.write(tInfo.info_hash.array());
-
-			out.write(msg.toByteArray());
-			out.flush();
-								/*
-			in.readFully(buf);
-			for(byte b: buf){
-				char c = (char)b;
-				System.out.print(c);
-			}*/
-
-			int pstrlen = (int)in.readByte();
-			if(pstrlen != protoNameLen){
-				//throw error
-			}
-			byte[] byte_pstr = new byte[pstrlen];
-
-			in.readFully(byte_pstr,0,pstrlen);
-
-			String pstr = new String(byte_pstr);
-		    	if(pstr.equals(protoName) == false){
-				//throw error
-			}
-		//	System.out.println(pstr);
-			in.skipBytes(8);
-			byte[] byte_hash = new byte[20];
-
-			in.readFully(byte_hash,0,20);
-		  	if(!Arrays.equals(byte_hash,tInfo.info_hash.array())){
-				System.out.println("ERRRORRORO!");
-			}
-			byte[] byte_peer = new byte[20];
-			in.readFully(byte_peer,0,20);
-			String peer_id = new String(byte_peer);
-			if(!peer_id.equals(peerEntry.getId())){
-				System.out.println("EERSDASDSDA!!!!");
-			}
-			//ByteArrayOutputStream msg = new ByteArrayOutputStream();
+			DataInputStream  in  = new DataInputStream(
+				new BufferedInputStream(peerConnection.getInputStream()));
 
 
-			System.out.println(peer_id);
-			//out.write(0);
-			for(int i = 0;i<10; i++){
-				out.writeChars("HEELLOOO");
+			// Send handshake to peer
+			try {
+				ByteArrayOutputStream msg = getHandshakeMsg();
+				out.write(msg.toByteArray());
 				out.flush();
-				break;
-				//System.out.println(in.readByte());
-				/*System.out.println(i);
-				try{
-				Thread.sleep(10000);
-				}
-				catch(InterruptedException e){
-				}*/
+			} catch(IOException ie) {
+				System.err.printf("Failed to send hanshake to peer %s",
+					peerEntry.getId());
+				return;
 			}
+
+			int numPieces = tInfo.file_length/tInfo.piece_length +
+				((tInfo.file_length % tInfo.piece_length == 0) ? 0 : 1);
+			System.out.printf("\nThe file length is %d. The piece length is %d. There are %d pieces to download.\n",
+				tInfo.file_length, tInfo.piece_length, numPieces);
+
+			//Read handshake from peer
+			try {
+				if(receiveHandshake(in, peerEntry) != true) {
+					System.err.printf("Did not receive proper handshake from peer %s",
+						peerEntry.getId());
+					return;
+				}
+			} catch(IOException ie) {
+				System.err.printf("Failed to read handshake from peer %s",
+					peerEntry.getId());
+				return;
+			}
+
+
+			/*byte[] interested = {1,0,0,0,2};
+			out.write(interested, 0, interested.length);
+			out.flush();*/
+
+			/*[] keepAlive = {0,0,0,0};
+			out.write(keepAlive, 0, keepAlive.length);
+			out.flush();*/
 
 
 
@@ -105,6 +124,9 @@ public class PeerDownload{
 
 	}
 
+	private byte[] getBitfieldMsg(int numPieces) {
+		return null;
+	}
 
 
 

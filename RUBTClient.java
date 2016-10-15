@@ -51,11 +51,15 @@ public class RUBTClient {
       TorrentInfo tInfo = new TorrentInfo(torrentFileBytes);
       System.out.printf("Trying to torrent %s\n", tInfo.file_name);
 
+      for(Byte b : Bencoder2.getInfoBytes(torrentFileBytes).array()) {
+        System.out.println(b);
+      }
+
       TrackerConnection conn = new TrackerConnection(tInfo);
       Peer[] peerList = conn.getPeerList();
       for(Peer p : peerList)
          System.out.print(p);
-     
+
       PeerDownload p = new PeerDownload(tInfo,"DONDESTALABIBLIOTECA",peerList);
       p.download();
 
